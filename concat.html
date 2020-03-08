@@ -4,23 +4,24 @@
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<meta http-equiv="X-UA-Compatible" content="ie=edge" />
-	<title>Concat</title>
+  <title>Concat</title>
+  <link rel="stylesheet" href="./css/common.css">
 	<style type="text/css">
-		*{
-			padding: 0;
-			margin: 0;
-		}
 		html,body{
 			width: 100%;
 			height: 100%;
 			overflow: hidden;
 			position: relative;
-		}
+    }
+    body{
+      padding: 20px;
+      box-sizing: border-box;
+    }
 		textarea{
 			position: absolute;
-			top: 50px;
-			bottom: 50px;
-			left: 50px;
+			top: 60px;
+			bottom: 30px;
+			left: 20px;
 			width: 400px;
 			display: block;
 			font-size: 20px;
@@ -29,34 +30,19 @@
 			border-left: 1px solid aqua;
 			line-height: 1.5;
 			padding-left: 20px;
-		}
-		input[type=button]{
-			position: absolute;
-			top: 12px;
-			left: 50px;
-			line-height: 24px;
-			outline: none;
-			font-size: 16px;
-			padding: 0 20px;
-			display: block;
-			background: aquamarine;
-			cursor: pointer;
-			appearance: none;
-			-webkit-appearance: none;
-		}
-		input[type=button].chg{
-			left: 150px;
-		}
-		.tostr{
+    }
+    .tostr{
 			left: 500px;
 		}
 	</style>
 </head>
 <body>
 	<textarea placeholder="ES6拼接字符串"></textarea>
-	<textarea class="tostr" placeholder="ES5拼接字符串"></textarea>
-	<input type="button" value="清除" />
-	<input type="button" class="chg" value="ES6转ES5" />
+  <textarea class="tostr" placeholder="ES5拼接字符串"></textarea>
+  <div class="clearfix">
+    <input type="button" class="cm-btn fl mr-10" value="清除" />
+    <input type="button" class="cm-btn fl" class="chg" value="ES6转ES5" />
+  </div>
 	<script type="text/javascript">
 		let oTxt = document.getElementsByTagName('textarea')[0] 
 		let oStr = document.getElementsByTagName('textarea')[1] 
