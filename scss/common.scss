@@ -1,0 +1,47 @@
+@import './reset.scss';
+
+// 变量
+@import './variable';
+
+// padding、margin 距离
+@import './distance.scss';
+
+// 浮动
+.fl {
+  float: left;
+}
+.fr {
+  float: right;
+}
+.clearfix {
+  zoom: 1;
+  &::after {
+    content: '';
+    display: block;
+    clear: both;
+  }
+}
+
+// flex
+.cm-flex{
+  display: flex;
+  &-column{
+    display: flex;
+    flex-direction: column;
+  }
+  &-wrap{
+    flex-wrap: wrap;
+  }
+  &-between{
+    justify-content: space-between;
+  }
+  &-1{
+    flex: 1;
+  }
+}
+
+// 按钮
+@import './button.scss';
+
+// 表单
+@import './form.scss';

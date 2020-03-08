@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+	<title>Concat</title>
+	<style type="text/css">
+		*{
+			padding: 0;
+			margin: 0;
+		}
+		html,body{
+			width: 100%;
+			height: 100%;
+			overflow: hidden;
+			position: relative;
+		}
+		textarea{
+			position: absolute;
+			top: 50px;
+			bottom: 50px;
+			left: 50px;
+			width: 400px;
+			display: block;
+			font-size: 20px;
+			border: none;
+			outline: none;
+			border-left: 1px solid aqua;
+			line-height: 1.5;
+			padding-left: 20px;
+		}
+		input[type=button]{
+			position: absolute;
+			top: 12px;
+			left: 50px;
+			line-height: 24px;
+			outline: none;
+			font-size: 16px;
+			padding: 0 20px;
+			display: block;
+			background: aquamarine;
+			cursor: pointer;
+			appearance: none;
+			-webkit-appearance: none;
+		}
+		input[type=button].chg{
+			left: 150px;
+		}
+		.tostr{
+			left: 500px;
+		}
+	</style>
+</head>
+<body>
+	<textarea placeholder="ES6拼接字符串"></textarea>
+	<textarea class="tostr" placeholder="ES5拼接字符串"></textarea>
+	<input type="button" value="清除" />
+	<input type="button" class="chg" value="ES6转ES5" />
+	<script type="text/javascript">
+		let oTxt = document.getElementsByTagName('textarea')[0] 
+		let oStr = document.getElementsByTagName('textarea')[1] 
+		let oClear = document.getElementsByTagName('input')[0] 
+		let oChg5 = document.getElementsByTagName('input')[1] 
+		oClear.onclick = function () {
+			oTxt.value = ''
+			oStr.value = ''
+		}
+		oChg5.onclick = function () {
+			let str = oTxt.value
+				.replace(/^\`\s*/, "'")
+				.replace(/\s*\`$/, "'")
+				.replace(/\$\{/g, "' + ")
+				.replace(/\}/g, " + '")
+				.replace(/(\>)\s+(\<)/g, "$1$2")
+				.replace(/(\>)\s+(\<)/g, "$1$2")
+			oStr.value = str
+		}
+		
+	</script>
+</body>
+</html>

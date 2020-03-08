@@ -1,0 +1,172 @@
+* {
+  margin: 0;
+  padding: 0; }
+
+img {
+  vertical-align: top;
+  border: none; }
+
+a {
+  text-decoration: none;
+  color: #000; }
+
+li {
+  list-style: none; }
+
+html {
+  -webkit-tap-highlight-color: transparent; }
+
+body {
+  font: 16px 'Microsoft yahei'; }
+
+em, i {
+  font-style: normal; }
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: normal; }
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0; }
+
+th {
+  font-weight: normal; }
+
+input, textarea, button {
+  border: none;
+  background: none;
+  outline: none; }
+
+select {
+  outline: none; }
+
+textarea {
+  resize: none; }
+
+input[type="button"], input[type="text"], input[type="submit"], input[type="search"], input[type="tel"], input[type="number"], select, option {
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none; }
+
+.pt-5 {
+  padding-top: 5px; }
+
+.pt-10 {
+  padding-top: 10px; }
+
+.pt-20 {
+  padding-top: 20px; }
+
+.pb-5 {
+  padding-bottom: 5px; }
+
+.pb-10 {
+  padding-bottom: 10px; }
+
+.pb-20 {
+  padding-bottom: 20px; }
+
+.pl-5 {
+  padding-left: 5px; }
+
+.pl-10 {
+  padding-left: 10px; }
+
+.pl-20 {
+  padding-left: 20px; }
+
+.pr-5 {
+  padding-right: 5px; }
+
+.pr-10 {
+  padding-right: 10px; }
+
+.pr-20 {
+  padding-right: 20px; }
+
+.mt-5 {
+  margin-top: 15px; }
+
+.mt-10 {
+  margin-top: 20px; }
+
+.mt-20 {
+  margin-top: 30px; }
+
+.mb-5 {
+  margin-bottom: 15px; }
+
+.mb-10 {
+  margin-bottom: 20px; }
+
+.mb-20 {
+  margin-bottom: 30px; }
+
+.ml-5 {
+  margin-left: 15px; }
+
+.ml-10 {
+  margin-left: 20px; }
+
+.ml-20 {
+  margin-left: 30px; }
+
+.mr-5 {
+  margin-right: 15px; }
+
+.mr-10 {
+  margin-right: 20px; }
+
+.mr-20 {
+  margin-right: 30px; }
+
+.fl {
+  float: left; }
+
+.fr {
+  float: right; }
+
+.clearfix {
+  zoom: 1; }
+  .clearfix::after {
+    content: '';
+    display: block;
+    clear: both; }
+
+.cm-flex {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex; }
+  .cm-flex-column {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column; }
+  .cm-flex-wrap {
+    -ms-flex-wrap: wrap;
+        flex-wrap: wrap; }
+  .cm-flex-between {
+    -webkit-box-pack: justify;
+        -ms-flex-pack: justify;
+            justify-content: space-between; }
+  .cm-flex-1 {
+    -webkit-box-flex: 1;
+        -ms-flex: 1;
+            flex: 1; }
+
+.cm-btn {
+  padding: 5px 20px;
+  background: #1f8dd6;
+  color: #fff;
+  font-size: 14px;
+  line-height: 20px;
+  cursor: pointer; }
+
+.cm-input {
+  line-height: 20px;
+  font-size: 14px;
+  padding: 4px;
+  border: 1px solid #1f8dd6; }

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>Note</title>
+  <link rel="stylesheet" href="./css/common.css">
+	<style type="text/css">
+		*{
+			padding: 0;
+			margin: 0;
+		}
+		html,body{
+			width: 100%;
+			height: 100%;
+			overflow: hidden;
+			position: relative;
+    }
+    body{
+      padding: 20px;
+      box-sizing: border-box;
+    }
+		textarea{
+			position: absolute;
+			top: 60px;
+			bottom: 30px;
+      left: 20px;
+      width: calc(100% - 40px);
+      display: block;
+      box-sizing: border-box;
+			font-size: 20px;
+			border: none;
+			outline: none;
+			border-left: 1px solid aqua;
+			line-height: 1.5;
+			padding-left: 20px;
+		}
+	</style>
+</head>
+<body>
+	<textarea></textarea>
+	<input type="button" class="cm-btn" value="清除" />
+	<script type="text/javascript">
+		let oTxt = document.querySelector('textarea')
+    let oClear = document.querySelector('input')
+    let storageKey = 'note-text'
+
+		oTxt.value = localStorage[storageKey] ? localStorage[storageKey] : ''
+		oTxt.oninput = function () {
+			localStorage[storageKey] = oTxt.value
+		}
+		oClear.onclick = function () {
+			oTxt.value = ''
+			localStorage[storageKey] = ''
+		}
+	</script>
+</body>
+</html>

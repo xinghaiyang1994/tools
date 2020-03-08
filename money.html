@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>money</title>
+  <link rel="stylesheet" href="./css/common.css">
+  <style>
+    body{
+      padding: 20px;
+    }
+    .title{
+      line-height: 42px;
+      font-size: 20px;
+      width: 120px;
+    }
+    .input-ls{
+      border: 1px dashed #ccc;
+      padding: 5px;
+    }
+    .input-min{
+      width: 60px;
+    }
+    .input-title{
+      line-height: 30px;
+    }
+    .tip{
+      line-height: 30px;
+    }
+    .tip-num{
+      color: #f00;
+    }
+    .table-wrap{
+      max-width: 1200px;
+      overflow: auto;
+    }
+
+    .table{
+      border-top: 1px solid #ccc;
+      border-left: 1px solid #ccc;
+    }
+    .td{
+      border-right: 1px solid #ccc;
+      border-bottom: 1px solid #ccc;
+      width: 100px;
+      line-height: 30px;
+      height: 40px;
+      box-sizing: border-box;
+      padding: 5px;
+    }
+    .num{
+      width: 50px;
+    } 
+    .add{
+      width: 38px;
+    }
+    .ok{
+      background: rgba(255, 255, 1, .5);
+    }
+    .th{
+      background: rgb(121, 187, 255);
+      text-align: center;
+      color: #fff;
+    }
+    .td-first{
+      background: rgb(146, 213, 113);
+      text-align: center;
+      color: #fff;
+    }
+    .table-axis{
+      position: relative;
+    }
+    .table-axis::before{
+      content: '';
+      display: block;
+      position: absolute;
+      top: 0;
+      right: 0;
+      border-top: 20px solid rgb(121, 187, 255);
+      border-bottom: 20px solid transparent;
+      border-right: 50px solid rgb(121, 187, 255);
+      border-left: 50px solid transparent;
+    }
+    .table-axis::after{
+      content: '';
+      display: block;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      border-bottom: 20px solid rgb(146, 213, 113);
+      border-top: 20px solid transparent;
+      border-left: 50px solid rgb(146, 213, 113);
+      border-right: 50px solid transparent;
+    }
+    .table-axis-x{
+      position: absolute;
+      top: 0;
+      right: 5px;
+      font-size: 14px;
+      color: #fff;
+    }
+    .table-axis-y{
+      position: absolute;
+      left: 5px;
+      bottom: 0;
+      z-index: 1;
+      font-size: 14px;
+      color: #fff;
+    }
+    .table-relative{
+      position: relative;
+    }
+    .table-x{
+      position: absolute;
+      height: 40px;
+      width: 100px;
+      top: 0;
+      left: 200px;
+      background: rgba(255, 0, 0, .3);
+      transition: all .5s;
+    }
+    .table-y{
+      position: absolute;
+      height: 40px;
+      top: 40px;
+      left: 0;
+      width: 100px;
+      background: rgba(255, 0, 0, .3); 
+      transition: all .5s;
+    }
+    .td-cell{
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="clearfix mb-5">
+    <div class="clearfix mb-5">
+      <h2 class="title fl">当期状况</h2>
+      <div class="clearfix fl">
+        <div class="input-ls clearfix mr-10 fl">
+          <div class="input-title fl mr-5">月薪</div>
+          <input type="text" name="baseMoney" class="input-min cm-input mr-5 fl">
+          <div class="input-title fl">K</div>
+        </div>
+        <div class="input-title pt-5 mr-10 fl">*</div>
+        <div class="input-ls clearfix mr-10 fl">
+          <div class="input-title fl mr-5">月数</div>
+          <input type="text" name="baseMonth" class="input-min cm-input mr-5 fl">
+          <div class="input-title fl">个</div>
+        </div>
+        <div class="input-title pt-5 mr-10 fl">+</div>
+        <div class="input-ls clearfix mr-10 fl">
+          <div class="input-title fl mr-5">额外</div>
+          <input type="text" name="baseExtra" class="input-min cm-input mr-5 fl">
+          <div class="input-title fl">K</div>
+        </div>
+      </div>
+    </div>
+    <div class="clearfix mb-5">
+      <h2 class="title fl">表格范围</h2>
+      <div class="fl">
+        <div class="clearfix mb-5">
+          <div class="input-title pt-5 mr-10 fl">X轴(月薪)</div>
+          <div class="input-ls clearfix mr-10 fl">
+            <input type="text" name="moneyStart" class="input-min cm-input mr-5 fl">
+            <div class="input-title fl">K</div>
+          </div>
+          <div class="input-title pt-5 mr-10 fl">~</div>
+          <div class="input-ls clearfix mr-10 fl">
+            <input type="text" name="moneyEnd" class="input-min cm-input mr-5 fl">
+            <div class="input-title fl">K</div>
+          </div>
+        </div>
+        <div class="clearfix">
+          <div class="input-title pt-5 mr-10 fl">Y轴(月数)</div>
+          <div class="input-ls clearfix mr-10 fl">
+            <input type="text" name="monthStart" class="input-min cm-input mr-5 fl">
+            <div class="input-title fl">个</div>
+          </div>
+          <div class="input-title pt-5 mr-10 fl">~</div>
+          <div class="input-ls clearfix mr-10 fl">
+            <input type="text" name="monthEnd" class="input-min cm-input mr-5 fl">
+            <div class="input-title fl">个</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="clearfix mb-5">
+      <h2 class="title fl">期望涨幅</h2>
+      <div class="clearfix fl">
+        <div class="input-ls clearfix mr-10 fl">
+          <div class="input-title fl mr-5">增加</div>
+          <input type="text" name="targetAdd" class="input-min cm-input mr-5 fl">
+          <div class="input-title fl">%</div>
+        </div>
+      </div>
+    </div>
+    <div class="clearfix">
+      <button id="btn" class="cm-btn fl mr-10">生成表格</button>
+      <div class="tip fl">
+        您当前的年薪为 
+        <span id="tip-base" class="tip-num"></span> 
+        K，您的期望年薪为 
+        <span id="tip-expect" class="tip-num"></span> 
+        K，黄色区域为符合期望
+      </div>
+    </div>
+  </div>
+  <div class="table-wrap clearfix">
+    <div class="table-relative fl">
+      <div id="table" class="table"></div>
+      <div class="table-x"></div>
+      <div class="table-y"></div>
+    </div>
+  </div>
+  <script src="./js/template-web.js"></script>
+  <script id="tpl" type="text/html">
+    <div class="tr clearfix">
+      <div class="td table-axis fl">
+        <span class="table-axis-x">月薪</span>
+        <span class="table-axis-y">月数</span>
+      </div>
+      <% for(var i = money[0]; i <= money[1]; i++){ %>
+        <div class="td th fl"><%= i %>K</div>
+      <% } %>
+    </div>
+
+    {{ each table item index}}
+    <div class="tr clearfix">
+      <div class="td td-first fl">{{ item.month }}</div>
+      {{ each item.list ls i}}
+      <div data-x="{{i}}" data-y="{{index}}" class="td td-cell fl {{ls.isMatch ? 'ok' : ''}} clearfix">
+        <div class="num fl">{{ ls.total }}</div>
+        <div class="add fl">{{ ls.add }}%</div>
+      </div>
+      {{ /each }}
+    </div>
+    {{ /each }}
+  </script>
+  <script>
+    // 设置默认表单数据
+    function setDefaultFormData(selector) {
+      for (let key in domData) {
+        document.querySelector(domData[key].selector).value = domData[key].default
+      }
+    }
+
+    // 获取表单数据
+    function getFormData(domData) {
+      let res = {}
+      for (let key in domData) {
+        res[key] = parseFloat(document.querySelector(domData[key].selector).value)
+      }
+
+      const {
+        baseMoney,
+        baseMonth,
+        baseExtra,
+        moneyStart,
+        moneyEnd,
+        monthStart,
+        monthEnd,
+        targetAdd
+      } = res
+      const money = [moneyStart, moneyEnd]
+      const month = [monthStart, monthEnd]
+      const base = baseMoney * baseMonth + baseExtra
+      return {
+        money,
+        month,
+        base,
+        targetAdd
+      }
+    }
+
+    // 根据数据渲染页面
+    function renderTable(domData) {
+      const { money, month, base, targetAdd } = getFormData(domData)
+
+      // 生成数据
+      let table = []
+      for (let i = month[0]; i <= month[1]; i ++) {
+        let list = []
+        for (let j = money[0]; j <= money[1]; j ++) {
+          let total = i * j
+          let add = Math.floor(((total / base) - 1) * 100)
+          let item = {
+            total,
+            add,
+            isMatch: add >= targetAdd
+          }
+          list.push(item)
+        }
+        let child = {
+          month: i,
+          list
+        }
+        table.push(child)
+      }
+      let data = {
+        money,
+        table
+      }
+
+      // 插入 dom
+      oTipBase.innerHTML = base
+      oTipExpect.innerHTML = Math.floor(base * ( 1 + targetAdd / 100))
+      oTable.innerHTML = template('tpl', data)
+      oTable.style.width = (money[1] - money[0] + 2) * 100 + 'px'
+    }
+
+    const oTable = document.querySelector('#table')
+    const oBtn = document.querySelector('#btn')
+    const oTipBase = document.querySelector('#tip-base')
+    const oTipExpect = document.querySelector('#tip-expect')
+    const oTableX = document.querySelector('.table-x')
+    const oTableY = document.querySelector('.table-y')
+
+    const domData = {
+      baseMoney: { 
+        selector: '[name="baseMoney"]',
+        default: 10
+      },
+      baseMonth: { 
+        selector: '[name="baseMonth"]',
+        default: 13
+      },
+      baseExtra: { 
+        selector: '[name="baseExtra"]',
+        default: 5
+      },
+      moneyStart: { 
+        selector: '[name="moneyStart"]',
+        default: 10
+      },
+      moneyEnd: { 
+        selector: '[name="moneyEnd"]',
+        default: 15
+      },
+      monthStart: { 
+        selector: '[name="monthStart"]',
+        default: 12
+      },
+      monthEnd: { 
+        selector: '[name="monthEnd"]',
+        default: 16
+      },
+      targetAdd: { 
+        selector: '[name="targetAdd"]',
+        default: 30
+      },
+    }
+  
+    // 设置默认值
+    setDefaultFormData(domData)
+    renderTable(domData)
+    
+    // 生成表格
+    oBtn.addEventListener('click', function() {
+      renderTable(domData)
+    })
+
+    // 移动定位 x、y 轴
+    oTable.addEventListener('mouseover', function(e) {
+      if (/td\-cell|num|add/.test(e.target.className)) {
+        let dom = e.target
+        if (/num|add/.test(e.target.className)) {
+          dom = dom.parentNode
+        }
+        let { x, y } = dom.dataset
+        x = parseInt(x, 10)
+        y = parseInt(y, 10)
+        oTableX.style.left = (x + 1) * 100 + 'px'
+        oTableY.style.top = (y + 1) * 40 + 'px'
+      }
+    })
+
+  </script>
+</body>
+</html>

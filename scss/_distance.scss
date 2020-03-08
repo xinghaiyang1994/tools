@@ -1,0 +1,21 @@
+// padding、margin 距离
+$distanceType: p, m;
+$distanceDirection: t, b, l, r;
+$distanceDirectionMap: (t: top, b: bottom, l: left, r: right);
+$distanceNumber: 5, 10, 20;
+
+@each $type in $distanceType {
+  @each $direction in $distanceDirection {
+    @each $number in $distanceNumber {
+      .#{$type}#{$direction}-#{$number} {
+        @if $type == p {
+          padding-#{map-get($distanceDirectionMap, $direction)}: $number + 0px;
+        } @else {
+          margin-#{map-get($distanceDirectionMap, $direction)}: $number + 10px;
+        }
+      }
+    }
+  }
+}
+
+
