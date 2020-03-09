@@ -34,14 +34,8 @@
       max-width: 1200px;
       overflow: auto;
     }
-
-    .table{
-      border-top: 1px solid #ccc;
-      border-left: 1px solid #ccc;
-    }
     .td{
-      border-right: 1px solid #ccc;
-      border-bottom: 1px solid #ccc;
+      border: 1px solid #ccc;
       width: 100px;
       line-height: 30px;
       height: 40px;
@@ -130,6 +124,11 @@
     }
     .td-cell{
       cursor: pointer;
+      transition: all .5s;
+    }
+    .td-act{
+      border: 2px solid #f00;
+      padding: 4px;
     }
   </style>
 </head>
@@ -241,6 +240,27 @@
     {{ /each }}
   </script>
   <script>
+    // className 检测
+    function hasClass(obj, sClass) {
+      let re = new RegExp('\\b' + sClass + '\\b', 'g')
+      return re.test(obj.className)
+    }
+
+    // className 添加
+    function addClass(obj, sClass) {
+      if (hasClass(obj, sClass)) {
+        obj.className = obj.className
+      } else {
+        obj.className += ' ' + sClass
+      }
+    }
+
+    // className 删除
+    function removeClass(obj, sClass) {
+      let re = new RegExp('\\b' + sClass + '\\b', 'g')
+      obj.className = obj.className.replace(re, '').replace(/\s+/g, ' ').replace(/^\s+|\s+$/g, '')
+    }
+
     // 设置默认表单数据
     function setDefaultFormData(selector) {
       for (let key in domData) {
@@ -387,6 +407,15 @@
         if (/num|add/.test(e.target.className)) {
           dom = dom.parentNode
         }
+
+        // 当前移动块高亮
+        const aCell = [].slice.call(oTable.querySelectorAll('.td-cell'))
+        aCell.forEach(function(el) {
+          removeClass(el, 'td-act')
+        })
+        addClass(dom, 'td-act')
+
+        // 设置 x y 轴高亮
         let { x, y } = dom.dataset
         x = parseInt(x, 10)
         y = parseInt(y, 10)
