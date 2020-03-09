@@ -136,7 +136,7 @@
 <body>
   <div class="clearfix mb-5">
     <div class="clearfix mb-5">
-      <h2 class="title fl">当期状况</h2>
+      <h2 class="title fl">当前状况</h2>
       <div class="clearfix fl">
         <div class="input-ls clearfix mr-10 fl">
           <div class="input-title fl mr-5">月薪</div>
@@ -198,6 +198,7 @@
     </div>
     <div class="clearfix">
       <button id="btn" class="cm-btn fl mr-10">生成表格</button>
+      <button id="btn-download" class="cm-btn fl mr-10">下载表格</button>
       <div class="tip fl">
         您当前的年薪为 
         <span id="tip-base" class="tip-num"></span> 
@@ -215,6 +216,7 @@
     </div>
   </div>
   <script src="./js/template-web.js"></script>
+  <script src="./js/html2canvas.min.js"></script>
   <script id="tpl" type="text/html">
     <div class="tr clearfix">
       <div class="td table-axis fl">
@@ -310,8 +312,22 @@
       oTable.style.width = (money[1] - money[0] + 2) * 100 + 'px'
     }
 
+    // 下载表格为图片
+    function downloadTableToImg() {
+      html2canvas(oTable).then(function(canvas) {
+        const imgURL = canvas.toDataURL('image/png')
+        const oA = document.createElement('a')
+        oA.download = 'money' + Date.now() + '.png'
+        oA.href = imgURL
+        document.body.appendChild(oA)
+        oA.click()
+        document.body.removeChild(oA)
+      })
+    }
+
     const oTable = document.querySelector('#table')
     const oBtn = document.querySelector('#btn')
+    const oBtnDownload = document.querySelector('#btn-download')
     const oTipBase = document.querySelector('#tip-base')
     const oTipExpect = document.querySelector('#tip-expect')
     const oTableX = document.querySelector('.table-x')
@@ -361,6 +377,9 @@
       renderTable(domData)
     })
 
+    // 下载表格
+    oBtnDownload.addEventListener('click', downloadTableToImg)
+
     // 移动定位 x、y 轴
     oTable.addEventListener('mouseover', function(e) {
       if (/td\-cell|num|add/.test(e.target.className)) {
@@ -375,7 +394,6 @@
         oTableY.style.top = (y + 1) * 40 + 'px'
       }
     })
-
   </script>
 </body>
 </html>
