@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
+  <title>Phone</title>
+  <link rel="stylesheet" href="./css/common.css">
+  <style>
+    .ls{
+      border-top: 1px solid #ccc;
+      padding: 20px;
+      font-size: 20px;
+    }
+    .ls:first-child{
+      border-top: none;
+    }
+    .ls-table{
+      border: 1px solid #ccc;
+      border-bottom: none;
+    }
+    .ls-table-tr{
+      border-bottom: 1px solid #ccc;
+    }
+    .ls-table-td{
+      padding: 0 8px;
+      word-wrap:break-word;
+      word-break:break-all;
+    }
+    .ls-title{
+      padding-bottom: 20px;
+    }
+    .ls-table-name{
+      max-width: 40%;
+      box-sizing: border-box;
+      border-right: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+  <ul id="main"></ul>
+  <script src="./js/template-web.js"></script>
+  <script id="tpl" type="text/html">
+    {{ each data item index}}
+    <li class="ls">
+      <h3 class="ls-title">{{ item.title }}</h3>
+      <div class="ls-table">
+        {{ each item.list ls i}}
+        <div class="ls-table-tr cm-flex">
+          <div class="ls-table-td ls-table-name">{{ls.name}}</div>
+          <div class="ls-table-td cm-flex-1">{{ls.value}}</div>
+        </div>
+        {{ /each }}
+      </div>
+    </li>
+    {{ /each }}
+  </script>
+
+  <script>
+    const oMain = document.querySelector('#main')
+    let data = []
+
+    // 常规
+    const general = {
+      title: '常规',
+      list: [
+        {
+          name: 'width',
+          value: window.innerWidth
+        },
+        {
+          name: 'devicePixelRatio',
+          value: window.devicePixelRatio
+        },
+      ]
+    }
+    data.push(general)
+
+    // navigator
+    const navigatorInfo = {
+      title: 'navigator',
+      list: []
+    }
+    for (let key in navigator) {
+      if (typeof navigator[key] !== 'function' && typeof navigator[key] !== 'object') {
+        navigatorInfo.list.push({
+          name: key,
+          value: navigator[key]
+        })
+      }
+    }
+    data.push(navigatorInfo)
+
+    oMain.innerHTML = template('tpl', { data: data })
+  </script>
+</body>
+</html>

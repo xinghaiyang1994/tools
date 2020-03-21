@@ -11,3 +11,6 @@
 * concat  
   转换 ES6 的 `` 为 ES5 字符串拼接模式，不过暂时还有问题。  
   https://xinghaiyang.com/tools/concat.html
+* phone  
+  查看手机端基本信息。  
+  https://xinghaiyang.com/tools/phone.html
