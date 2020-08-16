@@ -14,3 +14,6 @@
 * phone  
   查看手机端基本信息。  
   https://xinghaiyang.com/tools/phone.html
+* typeTransfer  
+  驼峰、划线格式转换。  
+  https://xinghaiyang.com/tools/typeTransfer.html

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>TypeTransfer</title>
+  <link rel="stylesheet" href="./css/common.css">
+	<style type="text/css">
+		body{
+      padding: 20px;
+    }
+    .content_ls{
+      padding: 10px 0;
+      border-bottom: 1px dashed red;
+    }
+    .content_ls_head{
+      line-height: 30px;
+      color: #1f8dd6;
+    }
+    .content_ls_name{
+      line-height: 30px;
+    }
+	</style>
+</head>
+<body>
+  <div class="clearfix">
+    <input id="input_text" type="text" class="cm-input fl mr-10">
+    <button id="btn_transfe" class="cm-btn fl">转换</button>
+  </div>
+  <ul id="tpl_target" class="content"></ul>
+  <script id="tpl" type="text/html">
+    {{ each produceArr item index}}
+    <li class="content_ls">
+      <h4 class="content_ls_head">{{ item.name }}</h4>
+      <div class="clearfix">
+        <button data-clipboard-target="#{{copyClassName}}{{index}}" class="{{copyClassName}} cm-btn mr-10 fl">复制</button>
+        <div id="{{copyClassName}}{{index}}" class="content_ls_name fl">{{ item.value }}</div>
+      </div>
+    </li>
+    {{ /each }}
+  </script>
+  <script src="./js/template-web.js"></script>
+  <script src="./js/clipboard.min.js"></script>
+  
+  <script>
+    const COPY_CLASS_NAME = 'copy_btn';
+    const oBtn = document.querySelector('#btn_transfe');
+    const oTplTarget = document.querySelector('#tpl_target');
+    const oInputText = document.querySelector('#input_text');
+    
+    // 输入值转为小写字母数组
+    function inputTransferLowerCaseArr(text) {
+      let arr = [];
+
+      if (/-|_/.test(text)) {
+        // 中划线、下划线拆成数组
+        arr = text.split(/-|_/);
+      } else {
+        // 大写字母增加 _ 标识符用于分割
+        const nText = text.replace(/([A-Z])/g, '_$1');
+        arr = nText.split(/_/);
+
+        // 如果第一个字符为大写则需要删除第一个 '' 元素
+        if (/([A-Z])/.test(text[0])) {
+          arr.shift();
+        }
+      }
+      return arr.map(function(el) {
+        return el ? el.toLowerCase() : '';
+      });
+    }
+
+    // 生成格式配置
+    const produceConfig = [
+      {
+        name: '大驼峰',
+        transferFn: function(arr) {
+          return arr.map(function(el) {
+            return el ? ( el[0].toUpperCase() + el.slice(1) ) : '';
+          }).join('');
+        }
+      },
+      {
+        name: '小驼峰',
+        transferFn: function(arr) {
+          return arr.map(function(el, index) {
+            if (index === 0) {
+              return el;
+            }
+            return el ? ( el[0].toUpperCase() + el.slice(1) ) : '';
+          }).join('');
+        }
+      },
+      {
+        name: '大写-下划线',
+        transferFn: function(arr) {
+          return arr.map(function(el, index) {
+            return el ? el.toUpperCase() : '';
+          }).join('_');
+        }
+      },
+      {
+        name: '大写-中划线',
+        transferFn: function(arr) {
+          return arr.map(function(el, index) {
+            return el ? el.toUpperCase() : '';
+          }).join('-');
+        }
+      },
+      {
+        name: '小写-下划线',
+        transferFn: function(arr) {
+          return arr.join('_');
+        }
+      },
+      {
+        name: '小写-中划线',
+        transferFn: function(arr) {
+          return arr.join('-');
+        }
+      },
+    ];
+    
+    // 转换
+    oBtn.addEventListener('click', function() {
+      const text = oInputText.value;
+      const lowerCaseArr = inputTransferLowerCaseArr(text);
+      
+      const produceArr = produceConfig.map(function(el) {
+        return {
+          name: el.name,
+          value: el.transferFn(lowerCaseArr),
+        }
+      })
+
+      oTplTarget.innerHTML = template('tpl', {
+        produceArr: produceArr,
+        copyClassName: COPY_CLASS_NAME,
+      });
+
+      // 复制
+      const clipboard = new ClipboardJS('.' + COPY_CLASS_NAME);
+
+      clipboard.on('success', function(e) {
+        console.info('复制内容:', e.text);
+        e.clearSelection();
+      });
+      
+      clipboard.on('error', function(e) {
+        console.log('复制error:', e)
+      });
+
+    });
+
+  </script>
+</body>
+</html>
