@@ -1,0 +1,6 @@
+.github
+scss
+README.md
+build.sh
+buildIgnore.txt
+.gitignore
