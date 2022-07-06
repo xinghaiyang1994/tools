@@ -41,9 +41,16 @@
 		let oTxt = document.querySelector('textarea')
     let oClear = document.querySelector('input')
     let storageKey = 'note-text'
+    const codeMap = {
+      Tab: 'Tab'
+    }
 
 		oTxt.value = localStorage[storageKey] ? localStorage[storageKey] : ''
-		oTxt.oninput = function () {
+		oTxt.onkeydown = function (e) {
+      if (e.code === codeMap.Tab) {
+        oTxt.value = oTxt.value + '  ';
+        e.preventDefault();
+      }
 			localStorage[storageKey] = oTxt.value
 		}
 		oClear.onclick = function () {
