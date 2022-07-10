@@ -1,62 +1,193 @@
 <!DOCTYPE html>
 <html lang="zh">
+
 <head>
-	<meta charset="UTF-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
   <title>Note</title>
   <link rel="stylesheet" href="./css/common.css">
-	<style type="text/css">
-		html,body{
-			width: 100%;
-			height: 100%;
-			overflow: hidden;
-			position: relative;
+  <link rel="stylesheet" href="./css/github-markdown.css">
+  <style type="text/css">
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      position: relative;
     }
-    body{
+
+    body {
       padding: 20px;
       box-sizing: border-box;
     }
-		textarea{
-			position: absolute;
-			top: 60px;
-			bottom: 30px;
+
+    .text_wrap {
+      position: absolute;
+      top: 60px;
+      bottom: 30px;
       left: 20px;
       width: calc(100% - 40px);
+      display: flex;
+    }
+    textarea {
+      font-size: 20px;
+      line-height: 1.5;
+      flex: 1;
+      height: 100%;
       display: block;
       box-sizing: border-box;
-			font-size: 20px;
-			border: none;
-			outline: none;
-			border-left: 1px solid aqua;
-			line-height: 1.5;
-			padding-left: 20px;
-		}
-	</style>
+      border: none;
+      outline: none;
+      border-left: 1px solid aqua;
+      padding-left: 20px;
+      margin-right: 20px;
+    }
+    #text_preview {
+      font-size: 20px;
+      line-height: 1.5;
+      flex: 1;
+      height: 100%;
+      border-left: 1px solid aqua;
+      padding-left: 20px;
+      overflow: auto;
+    }
+    .hide {
+      display: none;
+    }
+    .markdown-body ul {
+      list-style-type: disc;
+    }
+    .markdown-body ul ul {
+      list-style-type: circle;
+    }
+    .markdown-body li {
+      list-style-type: inherit;
+    }
+  </style>
 </head>
+
 <body>
-	<textarea></textarea>
-	<input type="button" class="cm-btn" value="清除" />
-	<script type="text/javascript">
-		let oTxt = document.querySelector('textarea')
-    let oClear = document.querySelector('input')
-    let storageKey = 'note-text'
+  <div class="text_wrap">
+    <textarea id="text"></textarea>
+    <div id="text_preview" class="markdown-body"></div>
+  </div>
+  <div>
+    <input type="button" id="clear_btn" class="cm-btn" value="清除" />
+    <input type="button" id="preview_btn" class="cm-btn" />
+    <input type="button" id="input_btn" class="cm-btn" />
+  </div>
+  <script src="./js/marked.min.js"></script>
+  <script src="./js/tools.js"></script>
+  <script type="text/javascript">
+    const oText = document.querySelector('#text');
+    const oTextPreview = document.querySelector('#text_preview');
+    const oClearBtn = document.querySelector('#clear_btn');
+    const oPreviewBtn = document.querySelector('#preview_btn');
+    const oInputBtn = document.querySelector('#input_btn');
+    const hideClassName = 'hide';
+
+    const storageKey = {
+      text: 'note-text',
+      config: 'note-config'
+    };
+
     const codeMap = {
       Tab: 'Tab'
+    };
+
+    const pageConfig = {
+      openPreview: false,
+      openInput: true
+    };
+
+    // 输入和 md 同步
+    function inputToMd() {
+      if (oText && oTextPreview) {
+        oTextPreview.innerHTML = marked.parse(oText.value);
+      }
     }
 
-		oTxt.value = localStorage[storageKey] ? localStorage[storageKey] : ''
-		oTxt.onkeydown = function (e) {
-      if (e.code === codeMap.Tab) {
-        oTxt.value = oTxt.value + '  ';
-        e.preventDefault();
+    // 更新本地存储和 dom 
+    function updateStorageAndDom() {
+      localStorage.setItem(storageKey.text, oText.value);
+      localStorage.setItem(storageKey.config, JSON.stringify(pageConfig));
+
+      if (pageConfig.openPreview) {
+        removeClass(oTextPreview, hideClassName);
+        oPreviewBtn.value = '隐藏预览';
+      } else {
+        addClass(oTextPreview, hideClassName);
+        oPreviewBtn.value = '开启预览';
       }
-			localStorage[storageKey] = oTxt.value
-		}
-		oClear.onclick = function () {
-			oTxt.value = ''
-			localStorage[storageKey] = ''
-		}
-	</script>
+
+      if (pageConfig.openInput) {
+        removeClass(oText, hideClassName);
+        oInputBtn.value = '隐藏输入';
+      } else {
+        addClass(oText, hideClassName);
+        oInputBtn.value = '开启输入';
+      }
+
+      inputToMd();
+    }
+
+    // 初始化
+    function init() {
+      try {
+        const localText = localStorage.getItem(storageKey.text) || '';
+        const localConfig = JSON.parse(localStorage.getItem(storageKey.config));
+        oText.value = localText;
+        if (typeof localConfig === 'object') {
+          pageConfig.openPreview = Boolean(localConfig.openPreview);
+          pageConfig.openInput = Boolean(localConfig.openInput);
+        }
+      } catch (error) {
+        console.log('==>init', error)
+      }
+      updateStorageAndDom();
+      oText.focus();
+    }
+
+    // 输入过程中 tab 处理
+    oText.addEventListener('keydown', function(e) {
+      if (e.code === codeMap.Tab) {
+        e.preventDefault();
+        const start = oText.selectionStart;
+        const end = oText.selectionEnd;
+  
+        oText.value = oText.value.slice(0, start) +
+          '  ' + oText.value.slice(end, oText.value.length);
+  
+        oText.selectionStart = start + 2;
+        oText.selectionEnd = start + 2;
+      }
+      updateStorageAndDom();
+    });
+    oText.addEventListener('input', function() {
+      updateStorageAndDom();
+    });
+
+    // 清除
+    oClearBtn.addEventListener('click', function() {
+      oText.value = '';
+      updateStorageAndDom();
+    });
+
+    // 预览开关
+    oPreviewBtn.addEventListener('click', function() {
+      pageConfig.openPreview = !pageConfig.openPreview;
+      updateStorageAndDom();
+    });
+
+    // 输入开关
+    oInputBtn.addEventListener('click', function() {
+      pageConfig.openInput = !pageConfig.openInput;
+      updateStorageAndDom();
+    });
+
+    init();
+  </script>
 </body>
+
 </html>
