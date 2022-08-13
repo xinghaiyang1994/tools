@@ -161,9 +161,10 @@
   
         oText.selectionStart = start + 2;
         oText.selectionEnd = start + 2;
+        updateStorageAndDom();
       }
-      updateStorageAndDom();
     });
+
     oText.addEventListener('input', function() {
       updateStorageAndDom();
     });
