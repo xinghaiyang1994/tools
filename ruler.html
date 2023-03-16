@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+  <meta charset="UTF-8">
+  <title>ruler</title>
+  <script type="text/javascript" src="./js/rulez.min.js"></script>
+  <link type="text/css" rel="stylesheet" href="./css/ruler.css">
+  <link type="text/css" rel="stylesheet" href="./css/rulez-black.css">
+</head>
+
+<body style="margin: 0;">
+  <div class="ruler-horizontal">
+    <svg id="svgH" xmlns="http://www.w3.org/2000/svg"></svg>
+  </div>
+  <div class="ruler-vertical">
+    <svg id="svgV" xmlns="http://www.w3.org/2000/svg"></svg>
+  </div>
+
+  <script>
+
+    const HCount = Math.floor(screen.width / 100);
+    const VCount = Math.floor(screen.height / 100);
+
+    const rulezH = new Rulez({
+      element: document.getElementById('svgH'),
+      layout: 'horizontal',
+      alignment: 'bottom',
+      textDefaults: {
+        rotation: -90,
+        centerText: true
+      },
+      guides: Array.from({
+        length: HCount
+      }).map(function (_, index) {
+        return {
+          position: (index + 1) * 100
+        }
+      })
+    });
+    rulezH.render();
+
+    const rulezV = new Rulez({
+      element: document.getElementById('svgV'),
+      layout: 'vertical',
+      alignment: 'right',
+      textDefaults: {
+        rotation: -90,
+        centerText: {
+          by: 'height',
+          operation: 'sum' //'sum' or 'sub'
+        }
+      },
+      texts: [
+        {
+          pixelGap: 100,
+          offset: 20
+        }
+      ],
+      guides: Array.from({
+        length: VCount
+      }).map(function (_, index) {
+        return {
+          position: (index + 1) * 100
+        }
+      })
+    });
+    rulezV.render();
+  </script>
+</body>
+
+</html>
