@@ -1,43 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
   <title>Phone</title>
   <link rel="stylesheet" href="./css/common.css">
   <style>
-    .ls{
+    .ls {
       border-top: 1px solid #ccc;
       padding: 20px;
       font-size: 20px;
     }
-    .ls:first-child{
+
+    .ls:first-child {
       border-top: none;
     }
-    .ls-table{
+
+    .ls-table {
       border: 1px solid #ccc;
       border-bottom: none;
     }
-    .ls-table-tr{
+
+    .ls-table-tr {
       border-bottom: 1px solid #ccc;
     }
-    .ls-table-td{
+
+    .ls-table-td {
       padding: 0 8px;
-      word-wrap:break-word;
-      word-break:break-all;
+      word-wrap: break-word;
+      word-break: break-all;
     }
-    .ls-title{
+
+    .ls-title {
       padding-bottom: 20px;
     }
-    .ls-table-name{
+
+    .ls-table-name {
       max-width: 40%;
       box-sizing: border-box;
       border-right: 1px solid #ccc;
     }
+
+    #test_100vh {
+      height: 100vh;
+    }
   </style>
 </head>
+
 <body>
   <ul id="main"></ul>
+  <div id="test_100vh">100vh</div>
   <script src="./js/template-web.js"></script>
   <script id="tpl" type="text/html">
     {{ each data item index}}
@@ -56,45 +69,97 @@
   </script>
 
   <script>
-    const oMain = document.querySelector('#main')
-    let data = []
 
-    // 常规
-    const general = {
-      title: '常规',
-      list: [
-        {
-          name: 'width',
-          value: window.innerWidth
-        },
-        {
-          name: 'height',
-          value: window.innerHeight
-        },
-        {
-          name: 'devicePixelRatio',
-          value: window.devicePixelRatio
-        },
-      ]
-    }
-    data.push(general)
-
-    // navigator
-    const navigatorInfo = {
-      title: 'navigator',
-      list: []
-    }
-    for (let key in navigator) {
-      if (typeof navigator[key] !== 'function' && typeof navigator[key] !== 'object') {
-        navigatorInfo.list.push({
-          name: key,
-          value: navigator[key]
-        })
+    function findKeyAndValueList(info) {
+      const list = []
+      if (typeof info !== 'object') {
+        return list;
       }
-    }
-    data.push(navigatorInfo)
 
-    oMain.innerHTML = template('tpl', { data: data })
+      for (let key in info) {
+        if (typeof info[key] !== 'function' && typeof info[key] !== 'object') {
+          list.push({
+            name: key,
+            value: info[key]
+          })
+        }
+      }
+      return list;
+    }
+
+    window.onload = function () {
+      const domMain = document.querySelector('#main')
+      const dom100vh = document.querySelector('#test_100vh')
+      let data = []
+
+      // 常规
+      const general = {
+        title: '常规',
+        list: [
+          {
+            name: 'window.innerWidth',
+            value: window.innerWidth
+          },
+          {
+            name: 'window.innerHeight',
+            value: window.innerHeight
+          },
+          {
+            name: 'window.devicePixelRatio',
+            value: window.devicePixelRatio
+          },
+          {
+            name: 'screen.width',
+            value: screen.width
+          },
+          {
+            name: 'screen.height',
+            value: screen.height
+          },
+          {
+            name: 'dom100vh.offsetHeight',
+            value: dom100vh.offsetHeight
+          },
+          {
+            name: 'dom100vh.offsetWidth',
+            value: dom100vh.offsetWidth
+          },
+        ]
+      }
+      data.push(general)
+
+      // screen
+      const screenInfo = {
+        title: 'screen',
+        list: findKeyAndValueList(screen)
+      }
+      data.push(screenInfo)
+
+      // window
+      const windowInfo = {
+        title: 'window',
+        list: findKeyAndValueList(window)
+      }
+      data.push(windowInfo)
+
+      // navigator
+      const navigatorInfo = {
+        title: 'navigator',
+        list: findKeyAndValueList(navigator)
+      }
+      data.push(navigatorInfo)
+
+      // dom100vh
+      const dom100vhInfo = {
+        title: 'dom100vh',
+        list: findKeyAndValueList(dom100vh)
+      }
+      data.push(dom100vhInfo)
+
+      domMain.innerHTML = template('tpl', { data: data })
+    }
+
   </script>
 </body>
+
 </html>
