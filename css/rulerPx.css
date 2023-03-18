@@ -1,0 +1,125 @@
+.main_wrap {
+  position: fixed;
+  top: 0;
+  left: 0; }
+
+#main {
+  position: absolute;
+  top: 0;
+  left: 0; }
+
+.axis {
+  position: absolute;
+  top: 0;
+  left: 0; }
+
+.axis_main_x {
+  display: flex; }
+  .axis_main_x .axis_mark_100 {
+    width: 100px;
+    position: relative;
+    display: flex; }
+    .axis_main_x .axis_mark_100::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 1px;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0.8); }
+  .axis_main_x .axis_mark_100_text {
+    width: 30px;
+    height: 30px;
+    text-align: center;
+    line-height: 30px;
+    position: absolute;
+    right: -8px;
+    top: 50px;
+    transform: rotate(-90deg); }
+  .axis_main_x .axis_mark_min {
+    width: 10px;
+    height: 10px;
+    position: relative; }
+  .axis_main_x .axis_mark_min_line {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 1px;
+    height: 25px;
+    background-color: rgba(0, 0, 0, 0.8); }
+  .axis_main_x .axis_mark_min_line_middle {
+    height: 50px; }
+
+.axis_main_y {
+  display: flex;
+  flex-direction: column; }
+  .axis_main_y .axis_mark_100 {
+    height: 100px;
+    position: relative;
+    display: flex;
+    flex-direction: column; }
+    .axis_main_y .axis_mark_100::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100vw;
+      height: 1px;
+      background-color: rgba(0, 0, 0, 0.8); }
+  .axis_main_y .axis_mark_100_text {
+    width: 30px;
+    height: 30px;
+    text-align: center;
+    line-height: 30px;
+    position: absolute;
+    left: 50px;
+    bottom: -8px; }
+  .axis_main_y .axis_mark_min {
+    width: 10px;
+    height: 10px;
+    position: relative; }
+  .axis_main_y .axis_mark_min_line {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 25px;
+    height: 1px;
+    background-color: rgba(0, 0, 0, 0.8); }
+  .axis_main_y .axis_mark_min_line_middle {
+    width: 50px; }
+
+#lines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 400px; }
+
+.operations {
+  margin-left: 100px;
+  margin-top: 100px; }
+
+.line_x {
+  position: absolute;
+  top: 0;
+  height: 100vh;
+  width: 1px;
+  background-color: #F00; }
+
+.line_y {
+  position: absolute;
+  left: 0;
+  width: 100vw;
+  height: 1px;
+  background-color: #F00; }
+
+.line_text {
+  width: 150px;
+  position: absolute;
+  color: #00f; }
+
+.operation_btn {
+  margin-bottom: 10px; }
+
+.introduce {
+  margin-left: 100px;
+  margin-top: 300px; }

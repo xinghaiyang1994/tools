@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>rulerPx</title>
+  <link rel="stylesheet" href="./css/common.css">
+  <link rel="stylesheet" href="./css/rulerPx.css">
+</head>
+
+<body>
+  <div class="main_wrap">
+    <div id="main"></div>
+    <div id="lines"></div>
+  </div>
+  <div class="introduce">
+    <div>所有的线都是 1px 。</div>
+    <div>以最小刻度为例,过了线则为 10px，压着线则为 9px 。</div>
+  </div>
+  <script src="./js/template-web.js"></script>
+  <script id="tpl" type="text/html">
+    {{ each axis item}}
+      <div class="axis">
+        <div class="{{if item.isY}}axis_main_y{{else}}axis_main_x{{/if}}">
+          {{ each item.scaleMark el}}
+            <div class="axis_mark_100">
+              <span class="axis_mark_100_text">{{ el }}</span>
+              {{ each axis100Config minItem}}
+                <div class="axis_mark_min">
+                  <span class="axis_mark_min_line {{if minItem.isMiddle}}axis_mark_min_line_middle{{/if}}"></span>
+                </div>
+              {{ /each }}
+            </div>
+          {{ /each }}
+        </div>
+      </div>
+    {{ /each }}
+  </script>
+  <script id="operation" type="text/html">
+    <div class="operations">
+      <div>
+        <button data-type="switch" class="cm-btn operation_btn">{{if isOpen}}关闭{{else}}开启{{/if}}触点生成坐标</button>
+        <button data-type="clear_last" class="cm-btn operation_btn">清除上一次触点生成坐标</button>
+        <button data-type="clear_all" class="cm-btn operation_btn">清除所有触点生成坐标</button>
+      </div>
+      {{ each lines item}}
+        <div class="line_x" style="left: {{item[0] - 1}}px"></div>
+        <div class="line_y" style="top: {{item[1] - 1}}px"></div>
+        <span class="line_text" style="left: {{item[0] + 10}}px;top: {{item[1] + 10}}px">
+          (x: {{item[0]}}, y: {{item[1]}})
+        </span>
+      {{ /each }}
+    </div>
+  </script>
+  <script>
+    const domMain = document.querySelector('#main');
+    const domLines = document.querySelector('#lines');
+
+    // 背景坐标
+    const axisXCount = Math.ceil(screen.width / 100);
+    const axisYCount = Math.ceil(screen.height / 100);
+    domMain.innerHTML = template('tpl', {
+      /** x、y 轴 100px 的个数 */
+      axis: [
+        {
+          scaleMark: Array.from({
+            length: axisXCount
+          }).map((_, index) => (index + 1) * 100),
+        },
+        {
+          scaleMark: Array.from({
+            length: axisYCount
+          }).map((_, index) => (index + 1) * 100),
+          isY: true
+        },
+      ],
+      /** 单个 100px 区域配置 */
+      axis100Config: Array.from({
+        length: 10
+      }).map((_, index) => ({
+        isMiddle: index === 4
+      })),
+    })
+
+    /** 渲染操作区域 */
+    function renderOperationView() {
+      domLines.innerHTML = template('operation', operationData)
+    }
+
+    /** 按钮操作类型 */
+    const BTN_TYPE = {
+      switch: 'switch',
+      clearLast: 'clear_last',
+      clearAll: 'clear_all',
+    }
+
+    /** 操作区数据 */
+    const operationData = {
+      isOpen: false,
+      lines: []
+    }
+
+    // 初始化渲染
+    renderOperationView();
+
+    // 按钮操作
+    domLines.addEventListener('click', (e) => {
+      const domType = e.target.dataset.type;
+      if (domType === BTN_TYPE.switch) {
+        operationData.isOpen = !operationData.isOpen;
+        renderOperationView();
+        return;
+      }
+
+      if (domType === BTN_TYPE.clearLast && operationData.lines.length > 0) {
+        operationData.lines.pop();
+        renderOperationView();
+        return;
+      }
+
+      if (domType === BTN_TYPE.clearAll) {
+        operationData.lines = [];
+        renderOperationView();
+        return;
+      }
+
+    });
+
+    // 点击页面
+    window.addEventListener('click', (e) => {
+      const domType = e.target.dataset.type;
+
+      if (operationData.isOpen &&
+        ![BTN_TYPE.switch, BTN_TYPE.clearLast, BTN_TYPE.clearAll].includes(domType)
+      ) {
+        operationData.lines.push([e.clientX, e.clientY]);
+        renderOperationView();
+      }
+    });
+
+  </script>
+</body>
+
+</html>
