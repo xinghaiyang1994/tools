@@ -17,3 +17,6 @@
 * typeTransfer  
   驼峰、划线格式转换。  
   https://xinghaiyang.com/tools/typeTransfer.html
+* markdownTable  
+  从网页中复制表格的字符串转换成 markdown 中表格的字符串
+  https://xinghaiyang.com/tools/markdownTable.html
