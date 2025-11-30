@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown 编辑器</title>
+    <link rel="stylesheet" href="./style.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="controls">
+            <button id="togglePreview" class="btn-primary">预览markdown</button>
+            
+            <div class="templates">
+                <span class="template-label">模板:</span>
+                <div class="template-buttons" id="templateButtons">
+                    <!-- 模板按钮将通过JS动态生成 -->
+                </div>
+            </div>
+        </div>
+        
+        <div class="editor-preview-container">
+            <div class="editor-container">
+                <textarea id="textEditor" placeholder="开始输入您的文本..."></textarea>
+            </div>
+            
+            <div id="previewContainer" class="preview-container hidden">
+                <div class="preview-content" id="previewContent"></div>
+            </div>
+        </div>
+        
+        <div class="status-bar">
+            <span id="status">已保存</span>
+            <span id="charCount">0 字符</span>
+        </div>
+    </div>
+    
+    <script src="./script.js"></script>
+</body>
+</html>

@@ -20,3 +20,6 @@
 * markdownTable  
   从网页中复制表格的字符串转换成 markdown 中表格的字符串
   https://xinghaiyang.com/tools/markdownTable.html
+* propmt  
+  日常使用的 propmt 模版
+  https://xinghaiyang.com/tools/propmt/index.html
