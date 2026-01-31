@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web 笔记</title>
+    
+    <!-- 自定义样式 -->
+    <link rel="stylesheet" href="./css/style.css">
+    
+    <!-- highlight.js 样式 (GitHub 亮色主题) -->
+    <link rel="stylesheet" href="./css/github.min.css">
+</head>
+<body>
+    <!-- 顶部工具栏 -->
+    <div class="toolbar">
+        <button id="clearBtn" class="btn">清除</button>
+        <button id="previewBtn" class="btn">开启预览</button>
+        <button id="inputBtn" class="btn">隐藏输入</button>
+        <div class="toolbar-spacer"></div>
+        <button id="exportBtn" class="btn">导出</button>
+    </div>
+    
+    <!-- 主体容器 -->
+    <div class="container" id="container">
+        <!-- 输入区域 -->
+        <div class="editor" id="editorWrapper">
+            <textarea id="editor" placeholder="在此输入 Markdown 内容..."></textarea>
+        </div>
+        
+        <!-- 预览区域 -->
+        <div class="preview" id="preview"></div>
+    </div>
+    
+    <!-- 底部状态栏 -->
+    <div class="statusbar" id="statusbar">
+        <span id="wordCount">字数：0</span>
+    </div>
+    
+    <!-- markdown-it -->
+    <script src="./js/markdown-it.min.js"></script>
+    <!-- highlight.js -->
+    <script src="./js/highlight.min.js"></script>
+    <!-- mermaid -->
+    <script src="./js/mermaid.min.js"></script>
+    <!-- 自定义脚本 -->
+    <script src="./js/app.js"></script>
+</body>
+</html>

@@ -2,6 +2,9 @@
 工具集合
 
 ## 工具类型
+* 新note  
+  基于本地存储的笔记，主要方便于日常暂时粘贴或者暂时记录东西并且不想创建新的文件的行为。  
+  https://xinghaiyang.com/tools/note/index.html
 * note  
   基于本地存储的笔记，主要方便于日常暂时粘贴或者暂时记录东西并且不想创建新的文件的行为。  
   https://xinghaiyang.com/tools/note.html
