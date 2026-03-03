@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片处理工具</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <!-- 顶部区域：导入图片按钮 -->
+    <header class="header">
+        <button id="importBtn" class="btn btn-primary">导入图片</button>
+        <!-- 隐藏的文件输入框 -->
+        <input type="file" id="fileInput" accept="image/*" hidden>
+        <button id="compareImportBtn" class="btn btn-primary" disabled>导入对比图片</button>
+        <!-- 隐藏的对比图片文件输入框 -->
+        <input type="file" id="compareFileInput" accept="image/*" hidden>
+    </header>
+
+    <!-- 主体区域 -->
+    <main class="main">
+        <!-- 操作区 -->
+        <section class="controls">
+            <div class="control-group">
+                <label for="widthInput">宽度：</label>
+                <input type="number" id="widthInput" min="1" placeholder="宽度">
+                <span class="unit">px</span>
+            </div>
+            <div class="control-group">
+                <label for="heightInput">高度：</label>
+                <input type="number" id="heightInput" min="1" placeholder="高度">
+                <span class="unit">px</span>
+            </div>
+            <div class="control-group">
+                <label for="lockRatio">
+                    <input type="checkbox" id="lockRatio" checked>
+                    锁定宽高比
+                </label>
+            </div>
+            <div class="control-group">
+                <button id="confirmBtn" class="btn btn-secondary">确定</button>
+                <button id="downloadBtn" class="btn btn-success">下载</button>
+            </div>
+        </section>
+
+        <!-- 图片展示区 -->
+        <section class="image-container">
+            <p class="placeholder" id="placeholder">请点击"导入图片"按钮选择图片</p>
+            <div class="image-wrapper">
+                <img id="previewImage" alt="预览图片" hidden>
+                <img id="compareImage" alt="对比图片" hidden>
+            </div>
+        </section>
+    </main>
+
+    <script src="./main.js"></script>
+</body>
+</html>

@@ -29,3 +29,6 @@
 * videoTool  
   视频处理工具
   https://xinghaiyang.com/tools/videoTool/index.html
+* imgTool  
+  图片处理工具
+  https://xinghaiyang.com/tools/imgTool/index.html
