@@ -26,3 +26,6 @@
 * propmt  
   日常使用的 propmt 模版
   https://xinghaiyang.com/tools/propmt/index.html
+* videoTool  
+  视频处理工具
+  https://xinghaiyang.com/tools/videoTool/index.html

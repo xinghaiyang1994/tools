@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>视频处理工具</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <!-- 顶部区域：导入视频按钮 -->
+    <div id="importArea" class="import-area">
+        <h1>视频处理工具</h1>
+        <label for="videoInput" class="import-button">
+            选择视频文件
+            <input type="file" id="videoInput" accept="video/*" style="display: none;">
+        </label>
+    </div>
+
+    <!-- 主体区域：初始隐藏，选择视频后显示 -->
+    <div id="mainArea" class="main-area" style="display: none;">
+        <!-- 操作区 -->
+        <div class="control-panel">
+            <div class="dimension-controls">
+                <div class="input-group">
+                    <label for="widthInput">宽度:</label>
+                    <input type="number" id="widthInput" min="1" placeholder="宽度">
+                    <span>px</span>
+                </div>
+                <div class="input-group">
+                    <label for="heightInput">高度:</label>
+                    <input type="number" id="heightInput" min="1" placeholder="高度">
+                    <span>px</span>
+                </div>
+                <button id="applyDimensionsBtn" class="btn btn-primary">确定</button>
+            </div>
+            <button id="captureBtn" class="btn btn-capture">截图</button>
+        </div>
+
+        <!-- 视频播放区 -->
+        <div class="video-container">
+            <video id="videoPlayer" controls>
+                您的浏览器不支持视频播放。
+            </video>
+        </div>
+
+        <!-- 截图展示区 -->
+        <div id="screenshotsContainer" class="screenshots-container">
+            <!-- 截图卡片将动态添加到这里 -->
+        </div>
+    </div>
+
+    <script src="./app.js"></script>
+</body>
+</html>
