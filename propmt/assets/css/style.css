@@ -23,25 +23,6 @@ body {
     box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
 }
 
-.header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 20px 30px;
-    text-align: center;
-    flex-shrink: 0;
-}
-
-.header h1 {
-    margin-bottom: 8px;
-    font-weight: 600;
-    font-size: 2.2rem;
-}
-
-.header p {
-    opacity: 0.9;
-    font-size: 1rem;
-}
-
 .controls {
     padding: 20px 30px;
     background-color: #f8f9fa;
@@ -50,6 +31,7 @@ body {
     align-items: center;
     gap: 25px;
     flex-shrink: 0;
+    flex-wrap: wrap;
 }
 
 .btn-primary {
@@ -80,6 +62,8 @@ body {
     align-items: center;
     gap: 15px;
     flex: 1;
+    min-width: 260px;
+    flex-wrap: wrap;
 }
 
 .template-label {
@@ -159,6 +143,7 @@ body {
     background: white;
     border-left: 1px solid #e1e5e9;
     transition: all 0.3s ease;
+    min-width: 0;
 }
 
 .preview-container.hidden {
@@ -169,12 +154,12 @@ body {
     flex: 1;
     padding: 30px;
     overflow-y: auto;
+    overflow-x: hidden;
     background: white;
     line-height: 1.8;
     font-size: 15px;
 }
 
-/* Markdown 样式 */
 .preview-content h1 {
     font-size: 2.2rem;
     margin: 1.8rem 0 1.2rem 0;
@@ -248,7 +233,8 @@ body {
     border-radius: 0 8px 8px 0;
 }
 
-.preview-content ul, .preview-content ol {
+.preview-content ul,
+.preview-content ol {
     margin-left: 2rem;
     margin-bottom: 1.5rem;
 }
@@ -258,166 +244,129 @@ body {
     color: #4a5568;
 }
 
-.preview-content ul li {
-    list-style-type: disc;
-}
-
-.preview-content ol li {
-    list-style-type: decimal;
-}
-
 .preview-content table {
     width: 100%;
     border-collapse: collapse;
     margin: 1.5rem 0;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    border-radius: 8px;
-    overflow: hidden;
+    background: white;
 }
 
-.preview-content th {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    font-weight: 600;
-    padding: 1rem;
+.preview-content th,
+.preview-content td {
+    border: 1px solid #e2e8f0;
+    padding: 12px;
     text-align: left;
 }
 
-.preview-content td {
-    padding: 0.9rem 1rem;
+.preview-content th {
+    background: #f8fafc;
+}
+
+.mermaid-block {
+    margin: 1.5rem 0;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #f8fafc;
+    overflow: hidden;
+}
+
+.mermaid-toolbar {
+    padding: 10px 16px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #475569;
+    background: linear-gradient(90deg, #eef2ff 0%, #f8fafc 100%);
     border-bottom: 1px solid #e2e8f0;
 }
 
-.preview-content tr:nth-child(even) {
-    background: #f7fafc;
+.mermaid-diagram-shell {
+    overflow-x: auto;
+    padding: 20px;
+    background: white;
 }
 
-.preview-content a {
-    color: #667eea;
-    text-decoration: none;
-    border-bottom: 1px solid transparent;
-    transition: all 0.2s ease;
+.mermaid-diagram {
+    min-width: fit-content;
 }
 
-.preview-content a:hover {
-    border-bottom-color: #667eea;
-}
-
-.preview-content img {
-    max-width: 100%;
+.mermaid-diagram svg {
+    display: block;
+    max-width: none;
     height: auto;
+}
+
+.preview-error-card,
+.mermaid-error-card {
+    margin: 1.5rem 0;
+    padding: 18px 20px;
+    border-radius: 12px;
+    background: #fff5f5;
+    border: 1px solid #feb2b2;
+    color: #9b2c2c;
+}
+
+.preview-error-card strong,
+.mermaid-error-title {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.mermaid-error-message {
+    margin-bottom: 12px;
+    color: #742a2a;
+    word-break: break-word;
+}
+
+.mermaid-error-source {
+    margin: 0;
+    padding: 16px;
     border-radius: 8px;
-    margin: 1rem 0;
+    background: #1f2937;
+    overflow-x: auto;
+}
+
+.mermaid-error-source code {
+    background: transparent;
+    border: none;
+    color: #f8fafc;
+    padding: 0;
 }
 
 .status-bar {
     display: flex;
     justify-content: space-between;
-    padding: 15px 30px;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 30px;
+    font-size: 0.9rem;
     background: #f8f9fa;
     border-top: 1px solid #e1e5e9;
-    font-size: 0.9rem;
     color: #6c757d;
     flex-shrink: 0;
+    flex-wrap: wrap;
 }
 
-/* 滚动条样式 */
-.preview-content::-webkit-scrollbar {
-    width: 8px;
-}
-
-.preview-content::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 4px;
-}
-
-.preview-content::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
-    border-radius: 4px;
-}
-
-.preview-content::-webkit-scrollbar-thumb:hover {
-    background: #a8a8a8;
-}
-
-/* 响应式设计 */
-@media (max-width: 768px) {
-    .container {
-        height: 100vh;
-    }
-    
-    .header {
-        padding: 15px 20px;
-    }
-    
-    .header h1 {
-        font-size: 1.8rem;
-    }
-    
-    .controls {
-        padding: 15px 20px;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 15px;
-    }
-    
-    .templates {
-        width: 100%;
-    }
-    
-    .template-buttons {
-        width: 100%;
-        justify-content: flex-start;
-    }
-    
+@media (max-width: 960px) {
     .editor-preview-container {
         flex-direction: column;
     }
-    
-    .editor-container.half-width {
-        flex: 0.5;
+
+    .editor-container,
+    .editor-container.half-width,
+    .preview-container {
+        flex: 1 1 auto;
     }
-    
+
     .preview-container {
         border-left: none;
         border-top: 1px solid #e1e5e9;
+        min-height: 40vh;
     }
-    
-    #textEditor {
-        padding: 20px;
-        font-size: 15px;
-    }
-    
-    .preview-content {
-        padding: 20px;
-    }
-}
 
-@media (max-width: 480px) {
-    .template-buttons {
-        flex-direction: column;
-        width: 100%;
-    }
-    
-    .template-btn {
-        width: 100%;
-        text-align: center;
-    }
-    
-    #textEditor {
-        padding: 15px;
-        font-size: 14px;
-    }
-    
+    #textEditor,
     .preview-content {
-        padding: 15px;
-        font-size: 14px;
-    }
-    
-    .status-bar {
-        padding: 12px 15px;
-        flex-direction: column;
-        gap: 5px;
-        align-items: center;
+        padding: 20px;
     }
 }

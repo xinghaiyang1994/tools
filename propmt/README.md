@@ -1,18 +1,77 @@
-# propmt (使用 deepseek 生成)
-你是一个资深前端工程师，请用 js 、css 来实现一个页面，要求如下：
-- 页面功能：
-  - 页面中有一个较大的输入区域,用户可以在其中输入文本，要求：输入的内容保存在本地；用户刷新页面后，输入的内容仍然存在,以 localStorage 的方式实现，key 为 "my_propmt_input"；输入区域支持 tab 键缩进;这个输入区域要尽可能的大
-  - 输入区域的上面有如下操作按钮
-    - 按钮名称为 '预览markdown'，点击后，输入区域宽度变为之前的 50%, 右侧出现一个预览区域，占 50%，预览区域会将左侧输入的内容使用 marked.js 库进行渲染，右侧预览区域风格简约,如果用户修改输入内容,则预览区域也会修改渲染后的内容。点击按钮再次后,按钮名称变成 '隐藏markdown'，输入区域宽度恢复之前的宽度，预览区域消失。
-  - 上面的按钮下方有一排模版按钮，每个按钮都有一个模版文本，点击按钮后，输入区域的内容会被替换为模版文本。这个模版在 js 文件中以 【const templates = [
-    {
-      name: '模版1',
-      content: '这是模版1的内容'
-    },
-    {
-      name: '模版2',
-      content: '这是模版2的内容'
-    }
-  ]】的格式定义。
-- 页面风格简约
-- 输出格式：输出为 3 个文件，一个是 html 文件，一个是 js 文件，一个是 css 文件。
+# propmt
+
+一个基于原生 `HTML`、`CSS` 和 `JavaScript` 的本地 Prompt 编辑器，适合快速编写、保存并预览 Markdown 内容。当前版本已支持 `Mermaid` 流程图预览，且第三方依赖已全部本地化，可在离线环境中使用。
+
+## 功能概览
+- 大尺寸输入区，适合长文本编辑。
+- 自动保存输入内容到 `localStorage`，刷新页面后可恢复。
+- 支持 `Tab` 键缩进，便于编写代码块或结构化文本。
+- 支持 Markdown 实时预览。
+- 支持 ` ```mermaid ` 代码块渲染流程图。
+- Mermaid 渲染失败时，会显示错误提示和原始源码。
+- 内置多组常用模板按钮，可一键填充 Prompt 模板。
+- 底部状态栏显示保存状态、字符数和行数。
+
+## 目录结构
+```text
+.
+├── index.html
+├── AGENTS.md
+├── README.md
+├── assets
+│   ├── css
+│   │   └── style.css
+│   ├── js
+│   │   ├── app.js
+│   │   └── preview-utils.js
+│   └── vendor
+│       ├── marked.min.js
+│       └── mermaid.min.js
+└── tests
+    └── preview-utils.test.js
+```
+
+## 本地运行
+本项目不需要打包，直接打开即可：
+
+```bash
+open index.html
+```
+
+如果需要通过本地服务访问：
+
+```bash
+python3 -m http.server 8000
+```
+
+然后访问 `http://localhost:8000`。
+
+## 使用说明
+1. 在输入框中编辑 Prompt 或 Markdown 内容。
+2. 内容会自动保存到 `localStorage`，键名为 `my_propmt_input`。
+3. 点击“预览markdown”切换左右分栏预览模式。
+4. 在 Markdown 中使用 ` ```mermaid ` 代码块可预览流程图。
+5. 点击模板按钮可快速替换当前输入内容。
+
+## 模板配置
+模板定义位于 [app.js](/Users/admin/code/myWeb/tools/propmt/assets/js/app.js) 顶部的 `templates` 数组中，新增模板时保持以下结构：
+
+```js
+{
+    name: '模板名称',
+    content: '模板内容'
+}
+```
+
+## 测试命令
+当前仓库使用 Node 内置测试运行器验证预览工具函数：
+
+```bash
+node --test tests/preview-utils.test.js
+```
+
+## 依赖说明
+- `marked.min.js`：本地 Markdown 渲染库。
+- `mermaid.min.js`：本地 Mermaid 图表渲染库。
+
+如需升级依赖，请替换 `assets/vendor/` 下对应文件，并回归验证 Markdown 与 Mermaid 预览功能。
