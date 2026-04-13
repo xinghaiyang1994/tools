@@ -79,6 +79,7 @@ const textEditor = document.getElementById('textEditor');
 const statusElement = document.getElementById('status');
 const charCountElement = document.getElementById('charCount');
 const togglePreviewBtn = document.getElementById('togglePreview');
+const toggleInputBtn = document.getElementById('toggleInput');
 const previewContainer = document.getElementById('previewContainer');
 const previewContent = document.getElementById('previewContent');
 const templateButtons = document.getElementById('templateButtons');
@@ -86,9 +87,30 @@ const editorContainer = document.querySelector('.editor-container');
 
 // 本地存储键名
 const STORAGE_KEY = 'my_propmt_input';
+const INDENT_UNIT = EditorIndentUtils.INDENT_UNIT;
 
-// Mermaid 图表计数器，用于生成稳定容器 ID
+// 输入区可见状态
+let isInputHidden = false;
+
+// Mermaid 缩放相关配置
+const MERMAID_MIN_SCALE = 0.6;
+const MERMAID_MAX_SCALE = 2.4;
+const MERMAID_SCALE_STEP = 0.2;
+
+// Mermaid 图表计数器与视图状态
 let mermaidDiagramCounter = 0;
+const mermaidViewStates = new Map();
+const mermaidModalState = {
+    activeDiagramId: null,
+    isDragging: false,
+    lastPointerX: 0,
+    lastPointerY: 0,
+};
+
+// Mermaid 弹层引用缓存
+let mermaidModalElement = null;
+let mermaidModalStageElement = null;
+let mermaidModalViewportElement = null;
 
 // 复用防抖函数，避免每次输入都重建计时器
 const debouncedSaveToLocalStorage = debounce(saveToLocalStorage, 500);
@@ -115,11 +137,17 @@ function init() {
     initTemplateButtons();
     initMarkdownRenderer();
     initMermaidRenderer();
+    initMermaidModal();
 
     textEditor.addEventListener('input', handleInput);
     textEditor.addEventListener('keydown', handleKeyDown);
+    previewContent.addEventListener('click', handlePreviewClick);
     window.addEventListener('beforeunload', saveToLocalStorage);
+    document.addEventListener('keydown', handleDocumentKeyDown);
     togglePreviewBtn.addEventListener('click', togglePreview);
+    toggleInputBtn.addEventListener('click', toggleInputVisibility);
+
+    applyEditorPreviewLayout();
 
     textEditor.focus();
 }
@@ -169,6 +197,24 @@ function initMermaidRenderer() {
             htmlLabels: true,
         },
     });
+}
+
+/**
+ * 初始化 Mermaid 弹层，并绑定缩放、关闭与拖拽事件。
+ *
+ * @returns {void}
+ */
+function initMermaidModal() {
+    document.body.insertAdjacentHTML('beforeend', PreviewUtils.createMermaidModalMarkup());
+
+    mermaidModalElement = document.getElementById('mermaidModal');
+    mermaidModalStageElement = document.getElementById('mermaidModalStage');
+    mermaidModalViewportElement = document.getElementById('mermaidModalViewport');
+
+    mermaidModalElement.addEventListener('click', handleMermaidModalClick);
+    mermaidModalViewportElement.addEventListener('mousedown', startMermaidModalDrag);
+    document.addEventListener('mousemove', handleMermaidModalDrag);
+    document.addEventListener('mouseup', stopMermaidModalDrag);
 }
 
 /**
@@ -278,7 +324,7 @@ function debounce(func, wait) {
 }
 
 /**
- * 在编辑器中拦截 `Tab` 键，并插入缩进字符。
+ * 在编辑器中拦截 `Tab` / `Shift + Tab`，并按编辑器行为处理两个空格缩进。
  *
  * @param {KeyboardEvent} event 当前键盘事件对象。
  * @returns {void}
@@ -292,11 +338,27 @@ function handleKeyDown(event) {
 
     const start = textEditor.selectionStart;
     const end = textEditor.selectionEnd;
+    const indentResult = event.shiftKey
+        ? EditorIndentUtils.outdentSelection(textEditor.value, start, end)
+        : EditorIndentUtils.indentSelection(textEditor.value, start, end);
 
-    textEditor.value = `${textEditor.value.substring(0, start)}\t${textEditor.value.substring(end)}`;
-    textEditor.selectionStart = start + 1;
-    textEditor.selectionEnd = start + 1;
+    textEditor.value = indentResult.value;
+    textEditor.selectionStart = indentResult.selectionStart;
+    textEditor.selectionEnd = indentResult.selectionEnd;
     textEditor.dispatchEvent(new Event('input'));
+    showStatus(event.shiftKey ? `已减少${INDENT_UNIT.length}个空格缩进` : `已插入${INDENT_UNIT.length}个空格缩进`, 'success');
+}
+
+/**
+ * 监听页面级按键事件，用于通过 `Esc` 关闭 Mermaid 弹层。
+ *
+ * @param {KeyboardEvent} event 当前按键事件对象。
+ * @returns {void}
+ */
+function handleDocumentKeyDown(event) {
+    if (event.key === 'Escape' && mermaidModalState.activeDiagramId) {
+        closeMermaidModal();
+    }
 }
 
 /**
@@ -309,6 +371,7 @@ function togglePreview() {
         previewContainer.classList.remove('hidden');
         editorContainer.classList.add('half-width');
         togglePreviewBtn.textContent = '隐藏markdown';
+        applyEditorPreviewLayout();
         updatePreview().catch((error) => {
             renderPreviewError(`Mermaid 预览异常: ${error.message}`);
         });
@@ -318,6 +381,43 @@ function togglePreview() {
     previewContainer.classList.add('hidden');
     editorContainer.classList.remove('half-width');
     togglePreviewBtn.textContent = '预览markdown';
+    applyEditorPreviewLayout();
+}
+
+/**
+ * 切换输入区显隐状态，并同步按钮文案与主区域布局。
+ *
+ * @returns {void}
+ */
+function toggleInputVisibility() {
+    isInputHidden = !isInputHidden;
+    applyEditorPreviewLayout();
+
+    if (!isInputHidden) {
+        textEditor.focus();
+    }
+}
+
+/**
+ * 根据当前输入区与预览区状态，统一更新按钮文案和布局类名。
+ *
+ * @returns {void}
+ */
+function applyEditorPreviewLayout() {
+    const layoutState = PreviewUtils.resolveInputVisibilityState(
+        isInputHidden,
+        !previewContainer.classList.contains('hidden')
+    );
+
+    toggleInputBtn.textContent = layoutState.toggleLabel;
+    editorContainer.classList.toggle('hidden', layoutState.shouldHideEditor);
+    previewContainer.classList.toggle('full-width', layoutState.shouldExpandPreview);
+
+    if (!layoutState.shouldHideEditor) {
+        editorContainer.classList.toggle('half-width', !previewContainer.classList.contains('hidden'));
+    } else {
+        editorContainer.classList.remove('half-width');
+    }
 }
 
 /**
@@ -327,7 +427,9 @@ function togglePreview() {
  */
 async function updatePreview() {
     try {
-        previewContent.innerHTML = marked.parse(textEditor.value);
+        mermaidViewStates.clear();
+        closeMermaidModal();
+        previewContent.innerHTML = PreviewUtils.wrapTablesForPreview(marked.parse(textEditor.value));
         await renderMermaidBlocks(previewContent);
     } catch (error) {
         renderPreviewError(`渲染错误: ${error.message}`);
@@ -346,7 +448,6 @@ async function renderMermaidBlocks(container) {
     );
 
     for (const codeElement of mermaidCodeBlocks) {
-        // 每个 Mermaid 图块单独 try/catch，避免单块失败影响其他内容。
         await renderSingleMermaidBlock(codeElement);
     }
 }
@@ -366,10 +467,15 @@ async function renderSingleMermaidBlock(codeElement) {
     mermaidDiagramCounter += 1;
 
     wrapper.className = 'mermaid-block';
+    wrapper.dataset.diagramId = renderId;
     wrapper.innerHTML = `
-        <div class="mermaid-toolbar">Mermaid 流程图</div>
+        <div class="mermaid-toolbar">
+            ${PreviewUtils.createMermaidToolbarMarkup()}
+        </div>
         <div class="mermaid-diagram-shell">
-            <div class="mermaid-diagram" id="${renderId}"></div>
+            <div class="mermaid-diagram-canvas">
+                <div class="mermaid-diagram" id="${renderId}"></div>
+            </div>
         </div>
     `;
 
@@ -377,16 +483,348 @@ async function renderSingleMermaidBlock(codeElement) {
 
     try {
         const renderResult = await mermaid.render(renderId, sourceCode);
-        const diagramShell = wrapper.querySelector('.mermaid-diagram-shell');
-        diagramShell.innerHTML = `
+        const canvasElement = wrapper.querySelector('.mermaid-diagram-canvas');
+        canvasElement.innerHTML = `
             <div class="mermaid-diagram">
                 ${renderResult.svg}
             </div>
         `;
+        const diagramElement = wrapper.querySelector('.mermaid-diagram');
+        registerMermaidDiagramState(wrapper, diagramElement);
+        applyMermaidPreviewState(renderId);
     } catch (error) {
         wrapper.innerHTML = PreviewUtils.createMermaidErrorMarkup(sourceCode, error.message);
         showStatus('Mermaid 图表存在语法错误', 'error');
     }
+}
+
+/**
+ * 根据当前 SVG 尺寸建立 Mermaid 图块状态，供预览与弹层共用。
+ *
+ * @param {HTMLElement} wrapper Mermaid 图块根节点。
+ * @param {HTMLElement} diagramElement Mermaid 图表容器节点。
+ * @returns {void}
+ */
+function registerMermaidDiagramState(wrapper, diagramElement) {
+    const svgElement = diagramElement.querySelector('svg');
+    const diagramShell = wrapper.querySelector('.mermaid-diagram-shell');
+    const viewBoxSize = PreviewUtils.getSvgViewBoxSize(svgElement.getAttribute('viewBox'));
+    const svgWidth = viewBoxSize?.width || parseFloat(svgElement.getAttribute('width')) || svgElement.getBoundingClientRect().width || 800;
+    const svgHeight = viewBoxSize?.height || parseFloat(svgElement.getAttribute('height')) || svgElement.getBoundingClientRect().height || 600;
+    const shellRect = diagramShell.getBoundingClientRect();
+    const availableWidth = Math.max(diagramShell.clientWidth - 40, 240);
+    const availableHeight = Math.max(window.innerHeight - shellRect.top - 32, 220);
+    const fitScale = PreviewUtils.computeFitScale(svgWidth, svgHeight, availableWidth, availableHeight - 40);
+
+    svgElement.removeAttribute('width');
+    svgElement.removeAttribute('height');
+    svgElement.style.width = `${svgWidth}px`;
+    svgElement.style.height = `${svgHeight}px`;
+    svgElement.style.transformOrigin = 'top left';
+    diagramShell.style.maxHeight = `${availableHeight}px`;
+
+    mermaidViewStates.set(wrapper.dataset.diagramId, {
+        wrapper,
+        svgMarkup: diagramElement.innerHTML,
+        baseWidth: svgWidth,
+        baseHeight: svgHeight,
+        previewMaxHeight: availableHeight,
+        previewFitScale: fitScale,
+        previewScale: fitScale,
+        modalScale: 1,
+        modalPanX: 0,
+        modalPanY: 0,
+    });
+}
+
+/**
+ * 统一处理预览区 Mermaid 工具栏点击事件。
+ *
+ * @param {MouseEvent} event 当前点击事件对象。
+ * @returns {void}
+ */
+function handlePreviewClick(event) {
+    const actionButton = event.target.closest('[data-action]');
+
+    if (!actionButton) {
+        return;
+    }
+
+    const mermaidBlock = actionButton.closest('.mermaid-block');
+
+    if (!mermaidBlock) {
+        return;
+    }
+
+    const diagramId = mermaidBlock.dataset.diagramId;
+    const action = actionButton.dataset.action;
+
+    if (action === 'zoom-in') {
+        updateMermaidPreviewScale(diagramId, MERMAID_SCALE_STEP);
+        return;
+    }
+
+    if (action === 'zoom-out') {
+        updateMermaidPreviewScale(diagramId, -MERMAID_SCALE_STEP);
+        return;
+    }
+
+    if (action === 'zoom-reset') {
+        resetMermaidPreviewScale(diagramId);
+        return;
+    }
+
+    if (action === 'open-modal') {
+        openMermaidModal(diagramId);
+    }
+}
+
+/**
+ * 更新预览区 Mermaid 图表缩放比例。
+ *
+ * @param {string} diagramId Mermaid 图块唯一标识。
+ * @param {number} step 当前操作需要增减的缩放步进值。
+ * @returns {void}
+ */
+function updateMermaidPreviewScale(diagramId, step) {
+    const state = mermaidViewStates.get(diagramId);
+
+    if (!state) {
+        return;
+    }
+
+    state.previewScale = PreviewUtils.clampMermaidScale(
+        Number((state.previewScale + step).toFixed(2)),
+        MERMAID_MIN_SCALE,
+        MERMAID_MAX_SCALE
+    );
+    applyMermaidPreviewState(diagramId);
+}
+
+/**
+ * 重置预览区 Mermaid 图表到默认缩放比例。
+ *
+ * @param {string} diagramId Mermaid 图块唯一标识。
+ * @returns {void}
+ */
+function resetMermaidPreviewScale(diagramId) {
+    const state = mermaidViewStates.get(diagramId);
+
+    if (!state) {
+        return;
+    }
+
+    state.previewScale = state.previewFitScale;
+    applyMermaidPreviewState(diagramId);
+}
+
+/**
+ * 将当前预览缩放状态应用到对应 Mermaid 图表节点。
+ *
+ * @param {string} diagramId Mermaid 图块唯一标识。
+ * @returns {void}
+ */
+function applyMermaidPreviewState(diagramId) {
+    const state = mermaidViewStates.get(diagramId);
+
+    if (!state) {
+        return;
+    }
+
+    const diagramElement = state.wrapper.querySelector('.mermaid-diagram');
+    const canvasElement = state.wrapper.querySelector('.mermaid-diagram-canvas');
+    const svgElement = diagramElement.querySelector('svg');
+    const scaledSize = PreviewUtils.computeScaledSize(state.baseWidth, state.baseHeight, state.previewScale);
+
+    canvasElement.style.width = `${scaledSize.width}px`;
+    canvasElement.style.height = `${scaledSize.height}px`;
+    svgElement.style.width = `${scaledSize.width}px`;
+    svgElement.style.height = `${scaledSize.height}px`;
+    svgElement.style.transform = '';
+    state.wrapper.querySelector('.mermaid-diagram-shell').style.maxHeight = `${state.previewMaxHeight}px`;
+}
+
+/**
+ * 打开 Mermaid 弹层，并渲染当前图表的大图视图。
+ *
+ * @param {string} diagramId Mermaid 图块唯一标识。
+ * @returns {void}
+ */
+function openMermaidModal(diagramId) {
+    const state = mermaidViewStates.get(diagramId);
+
+    if (!state) {
+        return;
+    }
+
+    mermaidModalState.activeDiagramId = diagramId;
+    mermaidModalElement.classList.remove('hidden');
+    mermaidModalElement.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('mermaid-modal-open');
+
+    mermaidModalStageElement.innerHTML = state.svgMarkup;
+    state.modalScale = state.previewScale;
+    state.modalPanX = 0;
+    state.modalPanY = 0;
+    applyMermaidModalState();
+}
+
+/**
+ * 关闭 Mermaid 弹层并重置拖拽状态。
+ *
+ * @returns {void}
+ */
+function closeMermaidModal() {
+    mermaidModalState.activeDiagramId = null;
+    mermaidModalState.isDragging = false;
+
+    if (!mermaidModalElement) {
+        return;
+    }
+
+    mermaidModalElement.classList.add('hidden');
+    mermaidModalElement.setAttribute('aria-hidden', 'true');
+    mermaidModalStageElement.innerHTML = '';
+    document.body.classList.remove('mermaid-modal-open');
+}
+
+/**
+ * 处理 Mermaid 弹层内的按钮点击，包括缩放、重置和关闭。
+ *
+ * @param {MouseEvent} event 当前点击事件对象。
+ * @returns {void}
+ */
+function handleMermaidModalClick(event) {
+    const actionButton = event.target.closest('[data-action]');
+
+    if (!actionButton) {
+        return;
+    }
+
+    const action = actionButton.dataset.action;
+
+    if (action === 'close-modal') {
+        closeMermaidModal();
+        return;
+    }
+
+    if (!mermaidModalState.activeDiagramId) {
+        return;
+    }
+
+    const state = mermaidViewStates.get(mermaidModalState.activeDiagramId);
+
+    if (!state) {
+        return;
+    }
+
+    if (action === 'modal-zoom-in') {
+        state.modalScale = PreviewUtils.clampMermaidScale(
+            Number((state.modalScale + MERMAID_SCALE_STEP).toFixed(2)),
+            MERMAID_MIN_SCALE,
+            MERMAID_MAX_SCALE
+        );
+        applyMermaidModalState();
+        return;
+    }
+
+    if (action === 'modal-zoom-out') {
+        state.modalScale = PreviewUtils.clampMermaidScale(
+            Number((state.modalScale - MERMAID_SCALE_STEP).toFixed(2)),
+            MERMAID_MIN_SCALE,
+            MERMAID_MAX_SCALE
+        );
+        applyMermaidModalState();
+        return;
+    }
+
+    if (action === 'modal-zoom-reset') {
+        state.modalScale = 1;
+        state.modalPanX = 0;
+        state.modalPanY = 0;
+        applyMermaidModalState();
+    }
+}
+
+/**
+ * 开始 Mermaid 弹层中的拖拽平移，仅在非按钮区域响应。
+ *
+ * @param {MouseEvent} event 当前鼠标按下事件对象。
+ * @returns {void}
+ */
+function startMermaidModalDrag(event) {
+    if (!mermaidModalState.activeDiagramId || event.target.closest('button')) {
+        return;
+    }
+
+    mermaidModalState.isDragging = true;
+    mermaidModalState.lastPointerX = event.clientX;
+    mermaidModalState.lastPointerY = event.clientY;
+    mermaidModalViewportElement.classList.add('is-dragging');
+}
+
+/**
+ * 在 Mermaid 弹层中根据鼠标移动更新图表平移位置。
+ *
+ * @param {MouseEvent} event 当前鼠标移动事件对象。
+ * @returns {void}
+ */
+function handleMermaidModalDrag(event) {
+    if (!mermaidModalState.isDragging || !mermaidModalState.activeDiagramId) {
+        return;
+    }
+
+    const state = mermaidViewStates.get(mermaidModalState.activeDiagramId);
+
+    if (!state) {
+        return;
+    }
+
+    const deltaX = event.clientX - mermaidModalState.lastPointerX;
+    const deltaY = event.clientY - mermaidModalState.lastPointerY;
+
+    mermaidModalState.lastPointerX = event.clientX;
+    mermaidModalState.lastPointerY = event.clientY;
+    state.modalPanX += deltaX;
+    state.modalPanY += deltaY;
+    applyMermaidModalState();
+}
+
+/**
+ * 结束 Mermaid 弹层中的拖拽平移交互。
+ *
+ * @returns {void}
+ */
+function stopMermaidModalDrag() {
+    mermaidModalState.isDragging = false;
+
+    if (mermaidModalViewportElement) {
+        mermaidModalViewportElement.classList.remove('is-dragging');
+    }
+}
+
+/**
+ * 将当前 Mermaid 弹层状态应用到大图视图。
+ *
+ * @returns {void}
+ */
+function applyMermaidModalState() {
+    const state = mermaidViewStates.get(mermaidModalState.activeDiagramId);
+
+    if (!state) {
+        return;
+    }
+
+    const svgElement = mermaidModalStageElement.querySelector('svg');
+
+    if (!svgElement) {
+        return;
+    }
+
+    svgElement.style.transformOrigin = 'top left';
+    mermaidModalStageElement.style.width = `${state.baseWidth}px`;
+    mermaidModalStageElement.style.height = `${state.baseHeight}px`;
+    mermaidModalStageElement.style.transform = `translate(${state.modalPanX}px, ${state.modalPanY}px) scale(${state.modalScale})`;
 }
 
 /**
