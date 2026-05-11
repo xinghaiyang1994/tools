@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SQL 格式化工具</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero" aria-labelledby="page-title">
+        <p class="eyebrow">SQL Formatter</p>
+        <h1 id="page-title">SQL 格式化工具</h1>
+        <p class="intro">粘贴 SQL 后选择多行格式化或压缩为一行展示。</p>
+      </section>
+
+      <section class="workspace" aria-label="SQL 处理区">
+        <label class="field-label" for="sqlInput">输入 SQL</label>
+        <textarea
+          id="sqlInput"
+          class="sql-box input-box"
+          placeholder="例如：select * from users where status = 'active' order by created_at desc"
+          spellcheck="false"
+        ></textarea>
+
+        <div class="toolbar" aria-label="操作按钮">
+          <button id="formatButton" class="button button-primary" type="button">格式化</button>
+          <button id="singleLineButton" class="button button-secondary" type="button">一行展示</button>
+          <button id="copyButton" class="button button-ghost" type="button">复制结果</button>
+        </div>
+
+        <label class="field-label" for="sqlOutput">处理结果</label>
+        <pre id="sqlOutput" class="sql-box output-box" aria-live="polite"></pre>
+      </section>
+    </main>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
